@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход - Tracking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center">Вход</h2>
+    <p id="message" class="text-red-500 mb-4 hidden"></p>
+    <form id="login-form">
+      <div class="mb-4">
+        <label class="block text-gray-700">Имя пользователя</label>
+        <input type="text" id="username" class="w-full p-2 border rounded" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">Пароль</label>
+        <input type="password" id="password" class="w-full p-2 border rounded" required>
+      </div>
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Войти</button>
+    </form>
+    <p class="mt-4 text-center">
+      Нет аккаунта? <a href="/register" class="text-blue-500">Зарегистрироваться</a>
+    </p>
+  </div>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const message = document.getElementById('message');
+      message.classList.add('hidden');
+
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json(); 
+      if (response.status === 200) {
+        const token = data.access_token; 
+        if (!token) {
+          message.textContent = 'Ошибка: токен не получен';
+          message.classList.remove('hidden');
+          return;
+        }
+        localStorage.setItem('token', token); 
+        window.location.href = '/dashboard';
+      } else {
+        message.textContent = `Ошибка: ${data.message || response.statusText}`;
+        message.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

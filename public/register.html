@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация - Tracking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center">Регистрация</h2>
+    <p id="message" class="text-red-500 mb-4 hidden"></p>
+    <form id="register-form">
+      <div class="mb-4">
+        <label class="block text-gray-700">Имя пользователя</label>
+        <input type="text" id="username" class="w-full p-2 border rounded" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">Пароль</label>
+        <input type="password" id="password" class="w-full p-2 border rounded" required>
+      </div>
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Зарегистрироваться</button>
+    </form>
+    <p class="mt-4 text-center">
+      Уже есть аккаунт? <a href="/login" class="text-blue-500">Войти</a>
+    </p>
+  </div>
+  <script>
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const message = document.getElementById('message');
+      message.classList.add('hidden');
+
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const text = await response.text();
+      if (response.status === 201) {
+        window.location.href = '/login'; 
+      } else {
+        message.textContent = `Ошибка: ${text}`;
+        message.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
