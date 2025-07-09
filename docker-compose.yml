@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: tracking-database
+    environment:
+      POSTGRES_USER: ${TRACKING_DB_USER}
+      POSTGRES_PASSWORD: ${TRACKING_DB_PASSWORD}
+      POSTGRES_DB: ${TRACKING_DB_NAME}
+    ports:
+      - "${TRACKING_DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: tracking
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${TRACKING_DB_USER}
+      DB_PASSWORD: ${TRACKING_DB_PASSWORD}
+      DB_NAME: ${TRACKING_DB_NAME}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
