@@ -24,10 +24,12 @@
 
 2. Создайте файл `.env` в корне проекта со следующими переменными (пример):
    ```
-   APP_DB_USER=user
-   APP_DB_PASSWORD=password
-   APP_DB_NAME=tracking
-   APP_DB_PORT=5432
+   CONNECT_DATABASE="postgres://user:password@localhost:5432/tracking?sslmode=disable"
+   TOKEN_SECRET=TOKENSECRET
+   TRACKING_DB_USER=user
+   TRACKING_DB_PASSWORD=password
+   TRACKING_DB_NAME=tracking
+   TRACKING_DB_PORT=5432
    ```
 
 3. Запустите приложение с помощью Docker Compose:
