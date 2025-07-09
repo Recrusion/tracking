@@ -2,10 +2,11 @@ package database
 
 import (
 	"database/sql"
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type TrackingDatabase struct {
@@ -20,7 +21,7 @@ func NewTrackingDatabase(db *sql.DB) *TrackingDatabase {
 }
 
 func InitDB() (*sql.DB, error) {
-	err := godotenv.Load("../../.env")
+	err := godotenv.Load("./.env")
 	if err != nil {
 		log.Printf("Ошибка загрузки данных из переменной окружения, %v", err)
 	}

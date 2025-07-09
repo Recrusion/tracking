@@ -8,6 +8,7 @@ import (
 	"tracking/internal/services"
 	"tracking/internal/transport"
 
+	"github.com/pressly/goose"
 	"github.com/rs/cors"
 )
 
@@ -24,24 +25,32 @@ func main() {
 		log.Printf("Ошибка проверки подключения к базе данных, %v", err)
 	}
 
+	if err := goose.SetDialect("postgres"); err != nil {
+		log.Printf("Ошибка выбора диалекта, %v", err)
+	}
+
+	if err := goose.Up(db, "/internal/migrations"); err != nil {
+		log.Printf("Ошибка запуска миграций базы данных, %v", err)
+	}
+
 	database := database.NewTrackingDatabase(db)
 	service := services.NewServiceTracking(database)
 	handler := transport.NewHandlersTracking(service)
 
 	mux := http.NewServeMux()
-	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("../../public"))))
+	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/public/index.html", http.StatusMovedPermanently)
 	})
 	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../../public/register.html")
+		http.ServeFile(w, r, "./public/register.html")
 	})
 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../../public/login.html")
+		http.ServeFile(w, r, "./public/login.html")
 	})
 	mux.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../../public/dashboard.html")
+		http.ServeFile(w, r, "./public/dashboard.html")
 	})
 
 	mux.HandleFunc("/api/register", handler.CreateUser)
