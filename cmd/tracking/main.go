@@ -29,7 +29,7 @@ func main() {
 		log.Printf("Ошибка выбора диалекта, %v", err)
 	}
 
-	if err := goose.Up(db, "/internal/migrations"); err != nil {
+	if err := goose.Up(db, "./internal/migrations"); err != nil {
 		log.Printf("Ошибка запуска миграций базы данных, %v", err)
 	}
 
