@@ -1,26 +1,23 @@
 package storage
 
 import (
-	"log"
+	"context"
+	"fmt"
 	"time"
 )
 
-func (td *TrackingDatabase) SaveAccessToken(username, token string, created, ending time.Time) error {
-	query := "insert into access_tokens (username, access_token, created, ending) values ($1, $2, $3, $4)"
-	_, err := td.db.Exec(query, username, token, created, ending)
+func (td *TrackingDatabase) SaveAccessToken(ctx context.Context, username, token string, created, ending time.Time) error {
+	_, err := td.db.ExecContext(ctx, "insert into access_tokens (username, access_token, created, ending) values ($1, $2, $3, $4)", username, token, created, ending)
 	if err != nil {
-		log.Printf("Ошибка сохранения access-токена (слой database), %v", err)
-		return err
+		return fmt.Errorf("error saving access token: %w", err)
 	}
 	return nil
 }
 
-func (td *TrackingDatabase) SaveRefreshToken(username, token string, created, ending time.Time) error {
-	query := "insert into refresh_tokens (username, refresh_token, created, ending) values ($1, $2, $3, $4)"
-	_, err := td.db.Exec(query, username, token, created, ending)
+func (td *TrackingDatabase) SaveRefreshToken(ctx context.Context, username, token string, created, ending time.Time) error {
+	_, err := td.db.ExecContext(ctx, "insert into refresh_tokens (username, refresh_token, created, ending) values ($1, $2, $3, $4)", username, token, created, ending)
 	if err != nil {
-		log.Printf("Ошибка сохранения refresh-токена (слой database), %v", err)
-		return err
+		return fmt.Errorf("error saving refresh token: %w", err)
 	}
 	return nil
 }
