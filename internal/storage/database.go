@@ -1,41 +1,41 @@
-package database
+package storage
 
 import (
-	"database/sql"
+	"context"
+	"fmt"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"log"
 	"os"
+	"sync"
+)
 
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+var (
+	dbOnce     sync.Once
+	dbInstance *sqlx.DB
+	onceError  error
 )
 
 type TrackingDatabase struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func NewTrackingDatabase(db *sql.DB) *TrackingDatabase {
+func NewTrackingDatabase(db *sqlx.DB) *TrackingDatabase {
 	td := &TrackingDatabase{
 		db: db,
 	}
 	return td
 }
 
-func InitDB() (*sql.DB, error) {
-	err := godotenv.Load("./.env")
-	if err != nil {
-		log.Printf("Ошибка загрузки данных из переменной окружения, %v", err)
-	}
-
-	connectString := os.Getenv("CONNECT_DATABASE")
-	database, err := sql.Open("postgres", connectString)
-	if err != nil {
-		log.Printf("Ошибка подключения к базе данных, %v", err)
-	}
-
-	err = database.Ping()
-	if err != nil {
-		log.Printf("Ошибка проверки подключения к базе данных, %v", err)
-	}
-
-	return database, nil
+func InitDB(ctx context.Context) (*sqlx.DB, error) {
+	dbOnce.Do(func() {
+		db, err := sqlx.ConnectContext(ctx, "postgres", os.Getenv("DSN"))
+		if err != nil {
+			log.Printf("Ошибка подключения к базе данных tracking: %v", err)
+			onceError = fmt.Errorf("error connecting to database: %w", err)
+		}
+		dbInstance = db
+		onceError = nil
+	})
+	return dbInstance, onceError
 }

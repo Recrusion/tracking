@@ -1,39 +1,35 @@
 package main
 
 import (
+	"context"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
-	"tracking/internal/database"
 	"tracking/internal/middleware"
 	"tracking/internal/services"
+	"tracking/internal/storage"
 	"tracking/internal/transport"
 
-	"github.com/pressly/goose"
 	"github.com/rs/cors"
 )
 
 func main() {
-	db, err := database.InitDB()
+	ctx := context.Background()
+
+	if err := godotenv.Load(".env"); err != nil {
+		log.Printf("Ошибка загрузки данных из переменной окружения, %v", err)
+		log.Fatalln(err)
+	}
+
+	db, err := storage.InitDB(ctx)
 	if err != nil {
 		log.Printf("Ошибка подключения к базе данных, %v", err)
-	} else {
-		log.Printf("Подключение к базе данных - успешно!")
+		log.Fatalln(err)
 	}
 
-	err = db.Ping()
-	if err != nil {
-		log.Printf("Ошибка проверки подключения к базе данных, %v", err)
-	}
+	defer db.Close()
 
-	if err := goose.SetDialect("postgres"); err != nil {
-		log.Printf("Ошибка выбора диалекта, %v", err)
-	}
-
-	if err := goose.Up(db, "./internal/migrations"); err != nil {
-		log.Printf("Ошибка запуска миграций базы данных, %v", err)
-	}
-
-	database := database.NewTrackingDatabase(db)
+	database := storage.NewTrackingDatabase(db)
 	service := services.NewServiceTracking(database)
 	handler := transport.NewHandlersTracking(service)
 

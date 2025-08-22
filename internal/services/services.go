@@ -1,12 +1,12 @@
 package services
 
-import "tracking/internal/database"
+import "tracking/internal/storage"
 
 type ServiceTracking struct {
-	service *database.TrackingDatabase
+	service *storage.TrackingDatabase
 }
 
-func NewServiceTracking(service *database.TrackingDatabase) *ServiceTracking {
+func NewServiceTracking(service *storage.TrackingDatabase) *ServiceTracking {
 	s := &ServiceTracking{
 		service: service,
 	}

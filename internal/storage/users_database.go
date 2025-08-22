@@ -1,4 +1,4 @@
-package database
+package storage
 
 import "log"
 
@@ -20,4 +20,3 @@ func (td *TrackingDatabase) UserVerificationByUsername(username string) (string,
 	}
 	return id, nil
 }
-
