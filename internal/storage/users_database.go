@@ -1,22 +1,23 @@
 package storage
 
-import "log"
+import (
+	"context"
+	"fmt"
+)
 
-func (td *TrackingDatabase) CreateUser(username, password string) error {
-	query := "insert into users (username, password) values ($1, $2)"
-	_, err := td.db.Exec(query, username, password)
+func (td *TrackingDatabase) CreateUser(ctx context.Context, username, password string) error {
+	_, err := td.db.ExecContext(ctx, "insert into users (username, password) values ($1, $2)", username, password)
 	if err != nil {
-		log.Printf("Ошибка добавления пользователя в базу данных (слой database), %v", err)
+		return fmt.Errorf("error create user: %w", err)
 	}
-	return err
+	return nil
 }
 
-func (td *TrackingDatabase) UserVerificationByUsername(username string) (string, error) {
-	query := "select id from users where username = $1"
+func (td *TrackingDatabase) UserVerificationByUsername(ctx context.Context, username string) (string, error) {
 	var id string
-	err := td.db.QueryRow(query, username).Scan(&id)
+	err := td.db.SelectContext(ctx, &id, "select id from users where username = $1", username)
 	if err != nil {
-		log.Printf("Пользователь с таким username - не найден, продолжаем регистрацию, %v", err)
+		return "", fmt.Errorf("error get user or user does not exist: %w", err)
 	}
 	return id, nil
 }
