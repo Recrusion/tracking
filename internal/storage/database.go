@@ -13,9 +13,9 @@ import (
 )
 
 type Storage interface {
-	GettingPassword(ctx context.Context, id string) (string, error)
+	GettingPasswordUser(ctx context.Context, username string) (string, error)
 	AddIndicator(ctx context.Context, username, indicator string, total int) error
-	DeleteIndicator(ctx context.Context, username, indicator string) error
+	DeleteIndicators(ctx context.Context, username, indicator string) error
 	IncreaseScore(ctx context.Context, username, indicator string) error
 	GetAllIndicators(ctx context.Context, username string) ([]models.Indicator, error)
 	GetTotalForIndicator(ctx context.Context, username, indicator string) (int64, error)
