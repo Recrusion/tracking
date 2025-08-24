@@ -3,12 +3,12 @@ package transport
 import "tracking/internal/services"
 
 type HandlersTracking struct {
-	handlers *services.ServiceTracking
+	endpoints services.Service
 }
 
-func NewHandlersTracking(handlers *services.ServiceTracking) *HandlersTracking {
+func NewHandlersTracking(endpoints services.Service) *HandlersTracking {
 	h := &HandlersTracking{
-		handlers: handlers,
+		endpoints: endpoints,
 	}
 	return h
 }

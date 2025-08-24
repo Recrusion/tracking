@@ -8,6 +8,8 @@ import (
 )
 
 func (h *HandlersTracking) Login(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	if r.Method != "POST" {
 		log.Printf("Неправильно выбран метод запроса (должен быть POST)")
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -19,13 +21,13 @@ func (h *HandlersTracking) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Ошибка декодирования данных из тела запроса (слой transport), %v", err)
 	}
-	err = h.handlers.Login(user.Username, user.Password)
+	err = h.endpoints.Login(ctx, user.Username, user.Password)
 	if err == nil {
-		accessToken, err = h.handlers.CreateAccessToken(user.Username)
+		accessToken, err = h.endpoints.CreateAccessToken(ctx, user.Username)
 		if err != nil {
 			log.Printf("Ошибка генерации access-токена (слой transport), %v", err)
 		}
-		refreshToken, err = h.handlers.CreateRefreshToken(user.Username)
+		refreshToken, err = h.endpoints.CreateRefreshToken(ctx, user.Username)
 		if err != nil {
 			log.Printf("Ошибка генерации refresh-токена (слой transport), %v", err)
 		}

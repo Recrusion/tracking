@@ -8,6 +8,8 @@ import (
 )
 
 func (h *HandlersTracking) CreateUser(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	if r.Method != "POST" {
 		log.Printf("Неправильный метод запроса (должен быть POST)")
 	}
@@ -26,7 +28,7 @@ func (h *HandlersTracking) CreateUser(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Ошибка декодирования данных из тела запроса, %v", err)
 	}
 
-	err = h.handlers.CreateUserService(user.Username, user.Password)
+	err = h.endpoints.CreateUserService(ctx, user.Username, user.Password)
 	if err != nil {
 		log.Printf("Ошибка создания пользователя (слой transport), %v", err)
 		w.WriteHeader(http.StatusConflict)
