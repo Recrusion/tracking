@@ -10,5 +10,15 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
 
+  app:
+    build: .
+    container_name: tracking
+    depends_on:
+      - db
+    environment:
+      DSN: postgres://postgres:postgres@db:5432/tracking?sslmode=disable
+    ports:
+      - 8080:8080
+
 volumes:
   db:
