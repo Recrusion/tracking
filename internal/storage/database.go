@@ -18,8 +18,8 @@ type Storage interface {
 	DeleteIndicators(ctx context.Context, username, indicator string) error
 	IncreaseScore(ctx context.Context, username, indicator string) error
 	GetAllIndicators(ctx context.Context, username string) ([]models.Indicator, error)
-	GetTotalForIndicator(ctx context.Context, username, indicator string) (int64, error)
-	GetScoreForIndicator(ctx context.Context, username, indicator string) (int64, error)
+	GetTotalForIndicator(ctx context.Context, username, indicator string) (int, error)
+	GetScoreForIndicator(ctx context.Context, username, indicator string) (int, error)
 	SaveAccessToken(ctx context.Context, username, token string, created, ending time.Time) error
 	SaveRefreshToken(ctx context.Context, username, token string, created, ending time.Time) error
 	CreateUser(ctx context.Context, username, password string) error

@@ -39,18 +39,18 @@ func (td *TrackingDatabase) DeleteIndicators(ctx context.Context, username, indi
 	return nil
 }
 
-func (td *TrackingDatabase) GetTotalForIndicator(ctx context.Context, username, indicator string) (int64, error) {
-	var total int64
-	err := td.db.SelectContext(ctx, &total, "select total from indicators where username = $1 and indicator = $2", username, indicator)
+func (td *TrackingDatabase) GetTotalForIndicator(ctx context.Context, username, indicator string) (int, error) {
+	var total int
+	err := td.db.GetContext(ctx, &total, "select total from indicators where username = $1 and indicator = $2", username, indicator)
 	if err != nil {
 		return 0, fmt.Errorf("error get total for indicator is %s: %w", indicator, err)
 	}
 	return total, nil
 }
 
-func (td *TrackingDatabase) GetScoreForIndicator(ctx context.Context, username, indicator string) (int64, error) {
-	var score int64
-	err := td.db.SelectContext(ctx, &score, "select score from indicators where username = $1 and indicator = $2", username, indicator)
+func (td *TrackingDatabase) GetScoreForIndicator(ctx context.Context, username, indicator string) (int, error) {
+	var score int
+	err := td.db.GetContext(ctx, &score, "select score from indicators where username = $1 and indicator = $2", username, indicator)
 	if err != nil {
 		return 0, fmt.Errorf("error get score for indicator is %s: %w", indicator, err)
 	}
