@@ -1,5 +1,7 @@
 FROM golang:1.24.4
 
+RUN apk --no-cache add ca-certificates postgresql-client
+
 WORKDIR /tracking
 
 COPY go.mod go.sum ./
