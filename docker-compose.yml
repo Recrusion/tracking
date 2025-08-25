@@ -17,6 +17,15 @@ services:
       - db
     environment:
       DSN: postgres://postgres:postgres@db:5432/tracking?sslmode=disable
+    command: >
+      sh -c "
+        echo 'Waiting for db...';
+        while ! nc -z db 5432; do sleep 1; done;
+        echo 'Applying migrations...';
+        goose -dir migrations postgres \"$$DSN\" up;
+        echo 'Starting app...';
+        ./tracking
+      "
     ports:
       - 8080:8080
 
