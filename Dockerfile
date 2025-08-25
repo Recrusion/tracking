@@ -1,6 +1,8 @@
 FROM golang:1.24.4
 
-RUN apk --no-cache add ca-certificates postgresql-client
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    netcat-openbsd
 
 WORKDIR /tracking
 
