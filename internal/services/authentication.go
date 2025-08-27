@@ -12,7 +12,7 @@ func (s *ServiceTracking) Login(ctx context.Context, username, password string) 
 		return err
 	}
 	if err = checkPasswordHash(password, passwordDB); err != nil {
-		return fmt.Errorf("incorrect password")
+		return fmt.Errorf("incorrect passwordd")
 	}
 	return nil
 }
