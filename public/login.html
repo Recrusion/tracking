@@ -5,55 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Вход - Tracking</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-6 text-center">Вход</h2>
-    <p id="message" class="text-red-500 mb-4 hidden"></p>
-    <form id="login-form">
-      <div class="mb-4">
-        <label class="block text-gray-700">Имя пользователя</label>
-        <input type="text" id="username" class="w-full p-2 border rounded" required>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700">Пароль</label>
-        <input type="password" id="password" class="w-full p-2 border rounded" required>
-      </div>
-      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Войти</button>
-    </form>
-    <p class="mt-4 text-center">
-      Нет аккаунта? <a href="/register" class="text-blue-500">Зарегистрироваться</a>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center px-4 font-sans">
+<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md border border-gray-100">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-gray-800 mb-2">С возвращением!</h2>
+    <p class="text-gray-600">Введите свои данные для входа</p>
+  </div>
+
+  <p id="message" class="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl mb-4 hidden"></p>
+
+  <form id="login-form" class="space-y-5">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Имя пользователя</label>
+      <input
+              type="text"
+              id="username"
+              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+              placeholder="Введите ваш username"
+              required
+      >
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Пароль</label>
+      <input
+              type="password"
+              id="password"
+              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+              placeholder="Введите ваш пароль"
+              required
+      >
+    </div>
+
+    <button
+            type="submit"
+            class="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 shadow hover:shadow-md"
+    >
+      Войти в аккаунт
+    </button>
+  </form>
+
+  <div class="mt-6 text-center">
+    <p class="text-gray-600">
+      Ещё нет аккаунта?
+      <a href="/register" class="text-primary-600 hover:text-primary-700 font-medium transition-colors duration-200">
+        Зарегистрироваться
+      </a>
     </p>
   </div>
-  <script>
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const message = document.getElementById('message');
-      message.classList.add('hidden');
+</div>
 
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
+<script>
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const message = document.getElementById('message');
+    message.classList.add('hidden');
 
-      const data = await response.json(); 
-      if (response.status === 200) {
-        const token = data.access_token; 
-        if (!token) {
-          message.textContent = 'Ошибка: токен не получен';
-          message.classList.remove('hidden');
-          return;
-        }
-        localStorage.setItem('token', token); 
-        window.location.href = '/dashboard';
-      } else {
-        message.textContent = `Ошибка: ${data.message || response.statusText}`;
-        message.classList.remove('hidden');
-      }
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
     });
-  </script>
+
+    const data = await response.json();
+    if (response.status === 200) {
+      const token = data.access_token;
+      if (!token) {
+        message.textContent = 'Ошибка: токен не получен';
+        message.classList.remove('hidden');
+        return;
+      }
+      localStorage.setItem('token', token);
+      window.location.href = '/dashboard';
+    } else {
+      message.textContent = data.message || 'Произошла ошибка при входе';
+      message.classList.remove('hidden');
+    }
+  });
+</script>
 </body>
 </html>

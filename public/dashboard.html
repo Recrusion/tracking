@@ -5,189 +5,310 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Личный кабинет - Tracking</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-gray-100 min-h-screen">
-  <nav class="bg-blue-600 p-4">
-    <div class="container mx-auto flex justify-between items-center">
-      <a href="/" class="text-white text-2xl font-bold">Tracking</a>
-      <button id="logout" class="text-white bg-red-500 px-4 py-2 rounded hover:bg-red-600">Выйти</button>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans">
+<!-- Навигация -->
+<nav class="bg-primary-600 p-4 shadow-md">
+  <div class="container mx-auto flex justify-between items-center">
+    <a href="/" class="text-white text-2xl font-bold">Tracking</a>
+    <button id="logout" class="text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition-colors duration-200">
+      Выйти
+    </button>
+  </div>
+</nav>
+
+<!-- Основной контент -->
+<div class="container mx-auto p-4 max-w-4xl">
+  <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 mb-6">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">Личный кабинет</h2>
+      <p class="text-gray-600">Управляйте своими целями и привычками</p>
     </div>
-  </nav>
-  <div class="container mx-auto p-4">
-    <h2 class="text-2xl font-bold mb-6">Личный кабинет</h2>
-    <p id="message" class="text-red-500 mb-4 hidden"></p>
-    <div class="mb-6">
-      <h3 class="text-xl font-bold mb-4">Добавить цель</h3>
-      <form id="add-goal-form">
-        <input id="indicator" type="text" placeholder="Название цели" class="w-full p-2 border rounded mb-2">
-        <input id="total" type="number" placeholder="Период в днях (max)" class="w-full p-2 border rounded mb-2" min="1">
-        <button type="submit" class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">Добавить</button>
+
+    <p id="message" class="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl mb-6 hidden"></p>
+
+    <!-- Форма добавления цели -->
+    <div class="mb-8">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Добавить новую цель</h3>
+      <form id="add-goal-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Название цели</label>
+          <input
+                  id="indicator"
+                  type="text"
+                  placeholder="Например: Чтение, Спорт, Медитация"
+                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                  required
+          >
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Период в днях</label>
+          <input
+                  id="total"
+                  type="number"
+                  placeholder="Сколько дней планируете придерживаться?"
+                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                  min="1"
+                  required
+          >
+        </div>
+        <button
+                type="submit"
+                class="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 shadow hover:shadow-md"
+        >
+          Добавить цель
+        </button>
       </form>
     </div>
+
+    <!-- Список целей -->
     <div>
-      <h3 class="text-xl font-bold mb-4">Ваши цели</h3>
-      <ul id="goals-list" class="space-y-2"></ul>
+      <h3 class="text-xl font-bold text-gray-800 mb-6">Ваши цели</h3>
+      <div id="goals-list" class="space-y-4">
+        <p class="text-gray-500 text-center">Загрузка целей...</p>
+      </div>
     </div>
   </div>
-  <script>
-    
-    function getToken() {
-      return localStorage.getItem('token');
-    }
+</div>
 
-    async function fetchWithToken(url, options) {
-      const token = getToken();
-      if (token) {
-        options.headers = {
-          ...options.headers,
-          'Authorization': `Bearer ${token}`,
-        };
-      }
-      const response = await fetch(url, options);
-      return response;
-    }
+<script>
+  function getToken() {
+    return localStorage.getItem('token');
+  }
 
-    async function loadGoals() {
-      const message = document.getElementById('message');
-      message.classList.add('hidden');
-      const response = await fetchWithToken('/api/getallindicators', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (response.status === 401) {
-        message.textContent = 'Неавторизован. Пожалуйста, войдите заново.';
-        message.classList.remove('hidden');
+  async function fetchWithToken(url, options = {}) {
+    const token = getToken();
+    if (token) {
+      options.headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+      };
+    }
+    const response = await fetch(url, options);
+    return response;
+  }
+
+  function showMessage(text, isError = true) {
+    const message = document.getElementById('message');
+    message.textContent = text;
+    message.classList.remove('hidden');
+    if (!isError) {
+      message.classList.remove('bg-red-50', 'border-red-200', 'text-red-600');
+      message.classList.add('bg-green-50', 'border-green-200', 'text-green-600');
+    } else {
+      message.classList.remove('bg-green-50', 'border-green-200', 'text-green-600');
+      message.classList.add('bg-red-50', 'border-red-200', 'text-red-600');
+    }
+  }
+
+  function hideMessage() {
+    const message = document.getElementById('message');
+    message.classList.add('hidden');
+  }
+
+  async function loadGoals() {
+    hideMessage();
+    const goalsList = document.getElementById('goals-list');
+
+    const response = await fetchWithToken('/api/getallindicators', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (response.status === 401) {
+      showMessage('Неавторизован. Пожалуйста, войдите заново.');
+      setTimeout(() => {
         window.location.href = '/login';
-        return;
-      }
-      const goals = await response.json();
-      const goalsList = document.getElementById('goals-list');
-      goalsList.innerHTML = '';
-      if (response.status === 200) {
-        if (!goals || goals.length === 0) {
-          goalsList.innerHTML = '<p>Нет целей. Добавьте новую!</p>';
-        } else {
-          goals.forEach(goal => {
-            const score = goal.points !== undefined ? goal.points : 0;
-            const total = goal.max !== undefined ? goal.max : 0;
-            const progress = total > 0 ? (score / total) * 100 : 0;
-            const li = document.createElement('li');
-            li.className = 'flex flex-col p-2 border rounded';
-            li.innerHTML = `
-              <div class="flex justify-between items-center">
-                <span>${goal.indicator || 'Без названия'}</span>
-                <div class="ml-2 space-x-2">
-                  <button class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600" onclick="increaseScore('${goal.indicator || ''}')">+1</button>
-                  <button class="bg-red-500 text-white px-2 py-1 rounded ml-2" onclick="deleteGoal('${goal.indicator || ''}', this.parentElement.parentElement.parentElement)">🗑️</button>
+      }, 2000);
+      return;
+    }
+
+    const goals = await response.json();
+    goalsList.innerHTML = '';
+
+    if (response.status === 200) {
+      if (!goals || goals.length === 0) {
+        goalsList.innerHTML = `
+            <div class="text-center py-8">
+              <p class="text-gray-500 text-lg">Пока нет целей</p>
+              <p class="text-gray-400 text-sm mt-2">Добавьте свою первую цель выше!</p>
+            </div>
+          `;
+      } else {
+        goals.forEach(goal => {
+          const score = goal.points !== undefined ? goal.points : 0;
+          const total = goal.max !== undefined ? goal.max : 0;
+          const progress = total > 0 ? Math.min((score / total) * 100, 100) : 0;
+          const progressColor = progress >= 100 ? 'bg-green-500' : 'bg-primary-600';
+
+          const goalElement = document.createElement('div');
+          goalElement.className = 'bg-gray-50 p-4 rounded-xl border border-gray-200';
+          goalElement.innerHTML = `
+              <div class="flex justify-between items-start mb-3">
+                <span class="text-lg font-medium text-gray-800">${goal.indicator || 'Без названия'}</span>
+                <div class="flex space-x-2">
+                  <button
+                    onclick="increaseScore('${goal.indicator || ''}')"
+                    class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-xl transition-colors duration-200"
+                  >
+                    +1 день
+                  </button>
+                  <button
+                    onclick="deleteGoal('${goal.indicator || ''}', this.parentElement.parentElement.parentElement)"
+                    class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-xl transition-colors duration-200"
+                  >
+                    🗑️
+                  </button>
                 </div>
               </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${progress}%;"></div>
+
+              <div class="mb-2">
+                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                  <span>Прогресс</span>
+                  <span>${score} из ${total} дней</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div class="${progressColor} h-2.5 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+                </div>
               </div>
-              <span class="text-sm text-gray-600 mt-1">${score} из ${total} дней</span>
+
+              ${progress >= 100 ? `
+                <div class="bg-green-50 border border-green-200 text-green-600 p-2 rounded-lg text-center text-sm mt-2">
+                  🎉 Цель достигнута! Поздравляем!
+                </div>
+              ` : ''}
             `;
-            goalsList.appendChild(li);
-          });
-        }
-      } else {
-        message.textContent = `Ошибка: ${await response.text()}`;
-        message.classList.remove('hidden');
+          goalsList.appendChild(goalElement);
+        });
       }
+    } else {
+      showMessage(`Ошибка загрузки целей: ${await response.text()}`);
     }
+  }
 
-    async function increaseScore(indicator) {
-      const message = document.getElementById('message');
-      message.classList.add('hidden');
-      const response = await fetchWithToken('/api/increase', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ indicator }),
-      });
-      if (response.status === 401) {
-        message.textContent = 'Неавторизован. Пожалуйста, войдите заново.';
-        message.classList.remove('hidden');
-        window.location.href = '/login';
-        return;
-      }
-      if (response.status === 200) {
-        loadGoals();
-      } else {
-        message.textContent = `Ошибка: ${await response.text()}`;
-        message.classList.remove('hidden');
-      }
-    }
-
-    async function deleteGoal(indicator, liElement) {
-      const message = document.getElementById('message');
-      message.classList.add('hidden');
-      const response = await fetchWithToken('/api/deleteindicator', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ indicator }),
-      });
-      if (response.status === 401) {
-        message.textContent = 'Неавторизован. Пожалуйста, войдите заново.';
-        message.classList.remove('hidden');
-        window.location.href = '/login';
-        return;
-      }
-      if (response.status === 200) {
-        if (liElement) {
-          liElement.remove();
-        }
-        message.textContent = 'Цель удалена';
-        message.classList.remove('hidden');
-        setTimeout(() => {
-          message.classList.add('hidden');
-        }, 2000);
-      } else {
-        message.textContent = `Ошибка: ${await response.text()}`;
-        message.classList.remove('hidden');
-      }
-      const goalsList = document.getElementById('goals-list');
-      if (goalsList.children.length === 0) {
-        loadGoals();
-      }
-    }
-
-    document.getElementById('add-goal-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const indicator = document.getElementById('indicator').value;
-      const total = document.getElementById('total').value;
-      const message = document.getElementById('message');
-      message.classList.add('hidden');
-      if (!indicator || !total) {
-        message.textContent = 'Введите название цели и период.';
-        message.classList.remove('hidden');
-        return;
-      }
-      const response = await fetchWithToken('/api/addindicators', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ indicator, total: parseInt(total) }),
-      });
-      if (response.status === 401) {
-        message.textContent = 'Неавторизован. Пожалуйста, войдите заново.';
-        message.classList.remove('hidden');
-        window.location.href = '/login';
-        return;
-      }
-      if (response.status === 201) {
-        document.getElementById('indicator').value = '';
-        document.getElementById('total').value = '';
-        loadGoals();
-      } else {
-        message.textContent = `Ошибка: ${await response.text()}`;
-        message.classList.remove('hidden');
-      }
+  async function increaseScore(indicator) {
+    hideMessage();
+    const response = await fetchWithToken('/api/increase', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ indicator }),
     });
 
-    document.getElementById('logout').addEventListener('click', () => {
-      localStorage.removeItem('token');
-      window.location.href = '/';
+    if (response.status === 401) {
+      showMessage('Неавторизован. Пожалуйста, войдите заново.');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+      return;
+    }
+
+    if (response.status === 200) {
+      loadGoals();
+    } else {
+      showMessage(`Ошибка: ${await response.text()}`);
+    }
+  }
+
+  async function deleteGoal(indicator, element) {
+    if (!confirm('Вы уверены, что хотите удалить эту цель?')) {
+      return;
+    }
+
+    hideMessage();
+    const response = await fetchWithToken('/api/deleteindicator', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ indicator }),
     });
 
+    if (response.status === 401) {
+      showMessage('Неавторизован. Пожалуйста, войдите заново.');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+      return;
+    }
+
+    if (response.status === 200) {
+      if (element) {
+        element.remove();
+      }
+      showMessage('Цель успешно удалена', false);
+      setTimeout(hideMessage, 3000);
+      loadGoals();
+    } else {
+      showMessage(`Ошибка: ${await response.text()}`);
+    }
+  }
+
+  document.getElementById('add-goal-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const indicator = document.getElementById('indicator').value.trim();
+    const total = document.getElementById('total').value;
+
+    hideMessage();
+
+    if (!indicator || !total) {
+      showMessage('Пожалуйста, заполните все поля');
+      return;
+    }
+
+    const response = await fetchWithToken('/api/addindicators', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ indicator, total: parseInt(total) }),
+    });
+
+    if (response.status === 401) {
+      showMessage('Неавторизован. Пожалуйста, войдите заново.');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+      return;
+    }
+
+    if (response.status === 201) {
+      document.getElementById('indicator').value = '';
+      document.getElementById('total').value = '';
+      showMessage('Цель успешно добавлена', false);
+      setTimeout(hideMessage, 3000);
+      loadGoals();
+    } else {
+      showMessage(`Ошибка: ${await response.text()}`);
+    }
+  });
+
+  document.getElementById('logout').addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  });
+
+  // Проверка авторизации при загрузке
+  if (!getToken()) {
+    window.location.href = '/login';
+  } else {
     loadGoals();
-  </script>
+  }
+</script>
 </body>
 </html>

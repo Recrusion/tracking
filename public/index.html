@@ -5,13 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tracking - Главная</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white p-8 rounded shadow-md w-full max-w-md text-center">
-    <h1 class="text-3xl font-bold mb-6">Tracking</h1>
-    <p class="mb-6">Добро пожаловать! Выберите действие:</p>
-    <button class="w-full bg-blue-500 text-white p-2 rounded mb-4 hover:bg-blue-600" onclick="window.location.href='/register'">Регистрация</button>
-    <button class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600" onclick="window.location.href='/login'">Авторизация</button>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center px-4 font-sans">
+<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md border border-gray-100">
+  <div class="text-center mb-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-2">Tracking</h1>
+    <p class="text-gray-600">Отслеживайте свои привычки и достигайте целей</p>
   </div>
+
+  <div class="space-y-4">
+    <button
+            onclick="window.location.href='/register'"
+            class="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 shadow hover:shadow-md"
+    >
+      Создать аккаунт
+    </button>
+    <button
+            onclick="window.location.href='/login'"
+            class="w-full border border-primary-500 text-primary-600 hover:bg-primary-50 font-medium py-3 px-4 rounded-xl transition-all duration-200"
+    >
+      Войти в аккаунт
+    </button>
+  </div>
+
+  <div class="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
+    <p class="text-sm text-blue-700 text-center">
+      💡 Начните свой путь к лучшим привычкам сегодня
+    </p>
+  </div>
+</div>
 </body>
 </html>
