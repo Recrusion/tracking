@@ -24,11 +24,17 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+        
+      - name: Run linter
+        run: golangci-lint run --timeout=3m
+
       - name: Run unit tests
         run: go test ./internal/transport -v -timeout=30s
 
       - name: Build verification
         run: go build -o /dev/null ./cmd/tracking
 
-      - name: Run linter
-        run: golangci-lint run --timeout=3m
+
+
