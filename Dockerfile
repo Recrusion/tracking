@@ -12,6 +12,8 @@ RUN go mod tidy
 
 COPY . .
 
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+
 RUN go build -o tracking ./cmd/tracking
 
 EXPOSE 8080
