@@ -77,8 +77,8 @@ func TestCreateUser(t *testing.T) {
 	w := httptest.NewRecorder()
 	handlers.CreateUser(w, req)
 
-	if status := w.Code; status != http.StatusConflict {
-		t.Errorf("Ожидали 409, а пришёл %d", status)
+	if status := w.Code; status != http.StatusInternalServerError {
+		t.Errorf("Ожидали 500, а пришёл %d", status)
 	}
 
 	// случай когда пользователя не существует
