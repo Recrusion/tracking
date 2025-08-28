@@ -29,3 +29,6 @@ jobs:
 
       - name: Build verification
         run: go build -o /dev/null ./cmd/tracking
+
+      - name: Run linter
+        run: golangci-lint run --timeout=3m
