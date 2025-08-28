@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"tracking/internal/models"
 )
 
 type Indicators struct {
@@ -74,8 +73,7 @@ func (h *HandlersTracking) GetAllIndicators(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		log.Printf("Ошибка получения username'a пользователя из контекста реквеста (слой transport), %v", err)
 	}
-	indicators := make([]models.Indicator, 0)
-	indicators, err = h.endpoints.GetAllIndicators(ctx, username)
+	indicators, err := h.endpoints.GetAllIndicators(ctx, username)
 	if err != nil {
 		log.Printf("Ошибка получения всех целей для пользователя %v, (слой transport), %v", username, err)
 	}

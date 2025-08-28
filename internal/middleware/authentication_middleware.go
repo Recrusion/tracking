@@ -12,6 +12,10 @@ import (
 	"tracking/internal/services"
 )
 
+type contextKey string
+
+var usernameKey contextKey = "username"
+
 func AuthenticationMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var tokenString string
@@ -46,7 +50,7 @@ func AuthenticationMiddleware(next http.HandlerFunc) http.HandlerFunc {
 				w.WriteHeader(http.StatusUnauthorized)
 			}
 		}
-		ctx := context.WithValue(r.Context(), "username", claims.Username)
+		ctx := context.WithValue(r.Context(), usernameKey, claims.Username)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }

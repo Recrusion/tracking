@@ -3,13 +3,14 @@ package storage
 import (
 	"context"
 	"fmt"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	"log"
 	"os"
 	"sync"
 	"time"
 	"tracking/internal/models"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 type Storage interface {

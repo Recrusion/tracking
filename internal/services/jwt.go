@@ -2,9 +2,10 @@ package services
 
 import (
 	"context"
-	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Claims struct {
