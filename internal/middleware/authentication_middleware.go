@@ -3,13 +3,14 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 	"tracking/internal/services"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type contextKey string
