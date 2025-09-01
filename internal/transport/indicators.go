@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Indicators struct {
@@ -73,13 +74,38 @@ func (h *HandlersTracking) GetAllIndicators(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		log.Printf("Ошибка получения username'a пользователя из контекста реквеста (слой transport), %v", err)
 	}
-	indicators, err := h.endpoints.GetAllIndicators(ctx, username)
+
+	pageSize, err := strconv.Atoi(r.URL.Query().Get("pageSize"))
+	if err != nil {
+		log.Printf("Ошибка получения количества строк из URL-адреса (слой transport), %v", err)
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		log.Printf("Ошибка получения номера страницы из URL-адреса (слой transport), %v", err)
+	}
+
+	if pageSize < 1 {
+		pageSize = 10
+	}
+	if page < 1 {
+		page = 1
+	}
+
+	indicators, err := h.endpoints.GetAllIndicators(ctx, username, pageSize, page)
 	if err != nil {
 		log.Printf("Ошибка получения всех целей для пользователя %v, (слой transport), %v", username, err)
 	}
 	err = json.NewEncoder(w).Encode(indicators)
 	if err != nil {
 		log.Printf("Ошибка энкодирования целей, %v", err)
+	}
+	response := map[string]interface{}{
+		"pageSize": pageSize,
+		"page":     page,
+	}
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		log.Printf("Ошибка энкодирования данных о странице, %v", err)
 	}
 }
 
