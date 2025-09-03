@@ -22,9 +22,9 @@ func (td *TrackingDatabase) IncreaseScore(ctx context.Context, username, indicat
 	return nil
 }
 
-func (td *TrackingDatabase) GetAllIndicators(ctx context.Context, username string, limit, offset int) ([]models.Indicator, error) {
+func (td *TrackingDatabase) GetAllIndicators(ctx context.Context, username string) ([]models.Indicator, error) {
 	var indicators []models.Indicator
-	err := td.db.SelectContext(ctx, &indicators, "select indicator, score, total from indicators where username = $1 order by indicator desc limit $1 offset $2", username, limit, offset)
+	err := td.db.SelectContext(ctx, &indicators, "select indicator, score, total from indicators where username = $1", username)
 	if err != nil {
 		return nil, fmt.Errorf("error get all indicators: %w", err)
 	}

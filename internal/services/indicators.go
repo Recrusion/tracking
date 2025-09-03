@@ -35,18 +35,8 @@ func (s *ServiceTracking) IncreaseScore(ctx context.Context, username, indicator
 	return nil
 }
 
-func (s *ServiceTracking) GetAllIndicators(ctx context.Context, username string, pageSize, page int) ([]models.Indicator, error) {
-	if page < 1 {
-		page = 1
-	}
-
-	if pageSize < 1 {
-		pageSize = 10
-	}
-
-	offset := (page - 1) * pageSize
-
-	result, err := s.service.GetAllIndicators(ctx, username, pageSize, offset)
+func (s *ServiceTracking) GetAllIndicators(ctx context.Context, username string) ([]models.Indicator, error) {
+	result, err := s.service.GetAllIndicators(ctx, username)
 	if err != nil {
 		return nil, err
 	}
